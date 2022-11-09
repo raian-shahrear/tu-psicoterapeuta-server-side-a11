@@ -30,6 +30,31 @@ async function run(){
         data: result
       })
     })
+
+    // get 3 services
+    app.get('/service-home', async(req, res) => {
+      const query = {};
+      const cursor = servicesCollection.find(query);
+      const services = await cursor.limit(3).toArray();
+      res.send({
+        status: true,
+        data: services
+      })
+    })
+
+    // get all services
+    app.get('/services', async(req, res) => {
+      const query = {};
+      const cursor = servicesCollection.find(query);
+      const services = await cursor.toArray();
+      res.send({
+        status: true,
+        data: services
+      })
+    })
+
+    // get individual service
+    
   }
   finally{
 
