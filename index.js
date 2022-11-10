@@ -41,7 +41,6 @@ function jwtVerification(req, res, next){
 
 
 
-
 const uri = `mongodb+srv://${process.env.MDB_USER}:${process.env.MDB_PASSWORD}@cluster0.xnvdy5u.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -113,7 +112,7 @@ async function run(){
           serviceId: req.query.serviceId
         }
       }
-      const cursor = reviewCollection.find(query);
+      const cursor = reviewCollection.find(query).sort({'uploadTime': -1});
       const comments = await cursor.toArray();
       res.send({
         status: true,
