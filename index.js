@@ -84,11 +84,16 @@ async function run(){
 
     // get all services
     app.get('/services', async(req, res) => {
+      const page = req.query.page;
+      const dataSize = Number(req.query.dataSize);
+
       const query = {};
       const cursor = servicesCollection.find(query);
-      const services = await cursor.toArray();
+      const services = await cursor.skip(dataSize * page).limit(dataSize).toArray();
+      const count = await servicesCollection.countDocuments(); 
       res.send({
         status: true,
+        count: count,
         data: services
       })
     })
