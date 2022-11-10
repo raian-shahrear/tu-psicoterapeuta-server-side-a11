@@ -10,6 +10,36 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// JWT token
+async function jwtToken(){
+  try {
+    app.post('/jwt', (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.JWT_SECRET);
+      res.send({token});
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+jwtToken();
+
+function jwtVerification(req, res, next){
+  const jwtHeader = req.headers.authorization;
+  if(!jwtHeader){
+    return res.status(401).send({message: 'unauthorized access'});
+  }
+  const token = jwtHeader.split(' ')[1];
+  jwt.verify(token, process.env.JWT_SECRET, function(err, decoded){
+    if(err){
+      return res.status(403).send({message: 'forbidden access'});
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
+
+
 
 
 const uri = `mongodb+srv://${process.env.MDB_USER}:${process.env.MDB_PASSWORD}@cluster0.xnvdy5u.mongodb.net/?retryWrites=true&w=majority`;
@@ -103,7 +133,12 @@ async function run(){
     })
 
     // get comments for individual email
-    app.get('/user-comments', async(req, res) => {
+    app.get('/user-comments', jwtVerification, async(req, res) => {
+      const decoded = req.decoded;
+      if(decoded.email !== req.query.email){
+        return res.status(403).send({message: 'forbidden access'})
+      }
+      
       let query = { };
       if(req.query.email){
         query = {
