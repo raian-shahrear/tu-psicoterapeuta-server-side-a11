@@ -75,7 +75,38 @@ async function run(){
       })
     })
 
-    
+    // get comments by serviceId
+    app.get('/comments', async(req, res) => {
+      let query = { };
+      if(req.query.serviceId){
+        query = {
+          serviceId: req.query.serviceId
+        }
+      }
+      const cursor = reviewCollection.find(query);
+      const comments = await cursor.toArray();
+      res.send({
+        status: true,
+        data: comments
+      })
+    })
+
+    // get comments for individual email
+    app.get('/user-comments', async(req, res) => {
+      let query = { };
+      if(req.query.email){
+        query = {
+          myEmail: req.query.email
+        }
+      }
+      console.log(req.query)
+      const cursor = reviewCollection.find(query);
+      const comments = await cursor.toArray();
+      res.send({
+        status: true,
+        data: comments
+      })
+    })
 
   }
   finally{
