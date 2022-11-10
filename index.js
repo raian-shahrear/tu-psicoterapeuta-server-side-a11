@@ -31,6 +31,17 @@ async function run(){
       })
     })
 
+    // post/create comment
+    app.post('/comment', async(req, res) => {
+      const comment = req.body;
+      const result = await reviewCollection.insertOne(comment);
+      console.log(result);
+      res.send({
+        status: true,
+        data: result
+      })
+    })
+
     // get 3 services
     app.get('/service-home', async(req, res) => {
       const query = {};
@@ -63,6 +74,9 @@ async function run(){
         data: service
       })
     })
+
+    
+
   }
   finally{
 
