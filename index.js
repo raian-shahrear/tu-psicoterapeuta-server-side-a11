@@ -91,6 +91,17 @@ async function run(){
       })
     })
 
+    // get individual comment
+    app.get('/comments/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const service = await reviewCollection.findOne(query);
+      res.send({
+        status: true,
+        data: service
+      })
+    })
+
     // get comments for individual email
     app.get('/user-comments', async(req, res) => {
       let query = { };
@@ -108,7 +119,26 @@ async function run(){
       })
     })
 
-    // Delete/Remove individual comment
+    // update/patch individual comment
+    app.patch('/comments/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const comment = req.body;
+      console.log(comment)
+      const updateComment = {
+        $set: {
+          myRating: comment.rating,
+          myComment: comment.comment
+        }
+      };
+      const result = await reviewCollection.updateOne(filter, updateComment);
+      res.send({
+        status: true,
+        data: result
+      })
+    })
+
+    // delete/remove individual comment
     app.delete('/comments/:id', async(req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
